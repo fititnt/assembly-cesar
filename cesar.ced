@@ -12,23 +12,36 @@
 ;>>                                               <<
 ;>-------------------------------------------------<
 
-;          ORG 65500             ; ajusta endereco de inicio (LED 00 do visor)
-;          DAB 'Emerson Rocha Luiz - 143503 (Pressione Enter)'
-;           ORG 1024
-
+;> Constantes e variáveis
+;>-----------------------------------------------------------------------------
 ; Constantes
-;id_autor:  DAB 'Emerson Rocha Luiz 143503'
+            ORG 1024
+
+id_autor:  DAB 'Emerson Rocha Luiz 143503'
 
 ; Ponteiros
-;p_id_autor: DW id_autor
 
-;>                     Início                      <
-;>-------------------------------------------------<
-; Limpa tela
-            JSR R7,_S_LIMPA_VISOR_ITERATIVA
+
+;> Programa
+;>-----------------------------------------------------------------------------
+            ORG 0
+            ;JSR R7,_S_LIMPA_VISOR_ITERATIVA ; Limpa mensagem da biblioteca
+
+; Escreve autor no visor
+	        MOV #36,R0                   ; tamanho da mensagem (em caracteres)
+	        MOV #id_autor,R1             ; endereco da mensagem a ser escrita no visor
+	        MOV #65500,R2                ; endereco do LED onde deve iniciar a mensagem
+	        JSR R7,_S_ESCREVER_NO_VISOR
+
+
 
 ; Finaliza programa
-fim:        JSR R7_S_ENCERRAR
+;            JMP fim
+
+;fim:
+;            JMP _S_ENCERRAR
+             HLT
+
 
 ;>---------------------------------------------<
 ;> AS SUBROTINAS DEVEM INICIAR SOMENTE APOS A  <
