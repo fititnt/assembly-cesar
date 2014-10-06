@@ -2,7 +2,7 @@
 ;> para que a pilha fique acima da area
 ;> de memoria mapeada para entrada e saida
 ;> ESTAS DUAS INSTRUCOES DEVEM SER MANTIDAS AQUI !
-          ORG 0                 ; primeira instrucao de qualquer 
+          ORG 0                 ; primeira instrucao de qualquer
           MOV #65498,R6         ; programa: aponta SP para 65498
 ;>-------------------------------------------------<
 ;>>                                               <<
@@ -11,6 +11,24 @@
 ;>>>                                             <<<
 ;>>                                               <<
 ;>-------------------------------------------------<
+
+;          ORG 65500             ; ajusta endereco de inicio (LED 00 do visor)
+;          DAB 'Emerson Rocha Luiz - 143503 (Pressione Enter)'
+;           ORG 1024
+
+; Constantes
+;id_autor:  DAB 'Emerson Rocha Luiz 143503'
+
+; Ponteiros
+;p_id_autor: DW id_autor
+
+;>                     Início                      <
+;>-------------------------------------------------<
+; Limpa tela
+            JSR R7,_S_LIMPA_VISOR_ITERATIVA
+
+; Finaliza programa
+fim:        JSR R7_S_ENCERRAR
 
 ;>---------------------------------------------<
 ;> AS SUBROTINAS DEVEM INICIAR SOMENTE APOS A  <
@@ -23,7 +41,7 @@
 ;>
 ;> JSR R7,_S_LIMPA_VISOR_ITERATIVA
 ;>
-          
+
 _S_LIMPA_VISOR_ITERATIVA:
           MOV R0,-(R6)          ; salva R0 na pilha
           MOV R1,-(R6)          ; salva R1 na pilha
@@ -146,7 +164,7 @@ _S_LIMPA_VISOR_ULTRA:
 ;> MOV #codASCII,R2             ; colocar no R2 o caractere a ser usado
 ;> JSR R7,_S_PREENCHE_VISOR
 ;>
-          
+
 _S_PREENCHE_VISOR:
           MOV R0,-(R6)          ; salva R0 na pilha
           MOV R1,-(R6)          ; salva R1 na pilha
@@ -229,7 +247,7 @@ _S_MULTIPLICAR:
           MOV R3,-(R6)          ; salva R3 na pilha
           MOV #16,R2            ; inicializa contador
           CLR R3                ; limpa R3
-__INICIO_LACO: 
+__INICIO_LACO:
           ROR R1                ; lsb do multiplicad. em C
           BCC __NAO_SOMAR       ; se era zero, nao soma
           ADD R0,R3             ; acumula multiplicando
