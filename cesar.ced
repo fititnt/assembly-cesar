@@ -14,25 +14,50 @@
 
 ;> Constantes e variáveis
 ;>-----------------------------------------------------------------------------
-; Constantes
+
             ORG 1024
 
-id_autor:  DAB 'Emerson Rocha Luiz 143503'
+id_autor:  DAB  'Emerson Rocha Luiz - 143503'           ; 27 chars
+k_enter:   DW   13                                      ; Tecla Enter
 
-; Ponteiros
 
+	        ORG HFFDA
+STACK:
+STATUS:		DB  0
+DATA:		DB  0
+VISOR:		DAB [36]
 
-;> Programa
+;> Programa principal
 ;>-----------------------------------------------------------------------------
             ORG 0
-            ;JSR R7,_S_LIMPA_VISOR_ITERATIVA ; Limpa mensagem da biblioteca
+            JSR R7,_S_LIMPA_VISOR_ULTRA ; Limpa mensagem da biblioteca
 
-; Escreve autor no visor
-	        MOV #36,R0                   ; tamanho da mensagem (em caracteres)
+;> Escreve autor no visor
+	        MOV #27,R0                   ; tamanho da mensagem (em caracteres)
 	        MOV #id_autor,R1             ; endereco da mensagem a ser escrita no visor
 	        MOV #65500,R2                ; endereco do LED onde deve iniciar a mensagem
 	        JSR R7,_S_ESCREVER_NO_VISOR
+            HLT
+            JMP InicioWhile
 
+; Aguardar tecla enter
+; void main(void) {
+; char c ---> R0
+
+; while ( (c=getchar()) != 'F') {
+InicioWhile:
+	JSR		R7,getchar
+	CMP		R0,#'F'
+	BEQ		FimWhile
+
+; hw_visor[0] = c;
+	MOV		R0,VISOR
+	JMP		InicioWhile
+
+; }
+FimWhile:
+
+; }
 
 
 ; Finaliza programa
@@ -42,6 +67,27 @@ id_autor:  DAB 'Emerson Rocha Luiz 143503'
 ;            JMP _S_ENCERRAR
              HLT
 
+
+;> Subrotinas
+;>-----------------------------------------------------------------------------
+
+; char getchar(void)
+; char c -> R0
+getchar:
+
+; while ( hw_status != 0x80 );
+getchar_While:
+	        CMP		STATUS,#H80
+	        BNE		getchar_While
+
+; c = hw_data;
+	        MOV		DATA,R0
+
+; hw_status = 0;
+	        CLR		STATUS
+
+; return c;
+	        RTS		R7
 
 ;>---------------------------------------------<
 ;> AS SUBROTINAS DEVEM INICIAR SOMENTE APOS A  <
