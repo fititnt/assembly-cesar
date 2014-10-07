@@ -15,7 +15,7 @@
 ;> Constantes e variáveis
 ;>-----------------------------------------------------------------------------
 
-            ORG 1024
+            ORG 8096
 
 id_autor:   DAB 'Emerson Rocha Luiz - 143503'           ; 27 chars
 MSG_BYE:    DAB 'Programa encerrado'                    ; 18 chars
@@ -72,9 +72,26 @@ T_MENU:
 	        MOV #65500,R2
 	        JSR R7,_S_ESCREVER_NO_VISOR
 
-	        ;JSR R7,KBD_WAIT
-	        JSR R7,KBD_WAIT_ENTER
-	        JMP T_GERAL
+T_MENU_WAIT:
+	        JSR R7,KBD_WAIT                               ;  Aguarda qualquer tecla
+	        CMP R0,#'g'                                   ; tecla = enter?
+            BEQ T_GERAL                                   ; Vai Tela T_GERAL
+	        CMP R0,#'r'                                   ; tecla = r?
+            BEQ T_R_RESUMIDO                              ; Vai Tela T_R_RESUMIDO
+	        CMP R0,#'e'                                   ; tecla = e?
+            BEQ T_SEL_ENG                                 ; Vai Tela T_SEL_ENG
+
+            ; @todo resolver para tecla f
+            ; BEQ estoura pra F
+	        ; O valor 138 está fora da faixa permitida para Desvio Condicional (8 bits)
+	        ;CMP R0,#'f'                                   ; tecla = f?
+            ;BEQ T_ENCERRAMENTO                            ; Vai Tela T_ENCERRAMENTO
+            ;SUB #138,R0
+
+
+	        BR  T_MENU_WAIT                                ; N.D.A, volta a esperar
+	        ;JSR R7,KBD_WAIT_ENTER
+	        ;JMP T_GERAL
 
 ;;;;;;;;;;; Tela: Relatório "Geral"
 T_GERAL:
@@ -159,6 +176,7 @@ KBD_WAIT:
 KBD_WAIT_SUB:
           TST STATUS            ; Já digitaram alguma tecla?
           BEQ KBD_WAIT_SUB      ; Se não houve alteração, testa novamente
+          MOV DATA, R0          ; Copia tecla para R0
           RTS R7                ; Retorna ao ponto em que foi chamada
 
 ;> Rotina para aguardar até que tecla enter seja pressionada
