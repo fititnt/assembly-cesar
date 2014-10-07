@@ -23,6 +23,9 @@ MSG_T_RR:   DAB 'Engenheiros: 99   Cidades:  999'       ; 31 chars
 MSG_MENU:   DAB 'Selecione uma acao: [r] [e] [g] [f]'   ; 35 chars
 MSG_GERAL1: DAB 'Maior lucro: R$ 99999,00 do eng: 99 '  ; 36 chars
 MSG_GERAL2: DAB 'Menor lucro: R$     9,00 do eng:  9 '  ; 36 chars
+MSG_SENG:   DAB 'Engenheiro:'                           ; 11 chars
+MSG_SERRO:  DAB 'Engenheiro invalido'                   ; 19 chars
+MSG_RENG:  DAB  'Engenheiro 99, lucro R$ 99999,00'      ; 32 chars
 KEY_ENTER:  DB  13                                      ; Tecla Enter, ASCII = 13
 
 
@@ -92,13 +95,44 @@ T_GERAL:
 	        JSR R7,KBD_WAIT_ENTER
 
 
-	        JMP T_ENCERRAMENTO
+	        JMP T_SEL_ENG
 
 ;;;;;;;;;;; Tela: Seleção do engenheiro
+T_SEL_ENG:
+
+	        JSR R7,_S_LIMPA_VISOR_ULTRA                  ; Limpa mensagem da biblioteca
+	        MOV #11,R0
+	        MOV #MSG_SENG,R1
+	        MOV #65500,R2
+	        JSR R7,_S_ESCREVER_NO_VISOR
+
+	        JSR R7,KBD_WAIT_ENTER
+	        JMP T_SEL_ERRO
 
 ;;;;;;;;;;; Tela: Mensagem de erro
+T_SEL_ERRO:
+
+	        JSR R7,_S_LIMPA_VISOR_ULTRA                  ; Limpa mensagem da biblioteca
+	        MOV #19,R0
+	        MOV #MSG_SERRO,R1
+	        MOV #65500,R2
+	        JSR R7,_S_ESCREVER_NO_VISOR
+
+	        JSR R7,KBD_WAIT_ENTER
+	        JMP T_REL_ERRO
 
 ;;;;;;;;;;; Tela: Relatorio do engenheiro
+
+T_REL_ERRO:
+
+	        JSR R7,_S_LIMPA_VISOR_ULTRA                  ; Limpa mensagem da biblioteca
+	        MOV #32,R0
+	        MOV #MSG_RENG,R1
+	        MOV #65500,R2
+	        JSR R7,_S_ESCREVER_NO_VISOR
+
+	        JSR R7,KBD_WAIT_ENTER
+	        JMP T_ENCERRAMENTO
 
 ;;;;;;;;;;; Tela: Mensagem de encerramento
 T_ENCERRAMENTO:
