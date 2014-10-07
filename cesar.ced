@@ -17,51 +17,28 @@
 
             ORG 1024
 
-id_autor:  DAB  'Emerson Rocha Luiz - 143503'           ; 27 chars
-k_enter:   DW   13                                      ; Tecla Enter
+id_autor:   DAB 'Emerson Rocha Luiz - 143503'           ; 27 chars
+KEY_ENTER:  DB  13                                      ; Tecla Enter, ASCII = 13
 
 
-	        ORG HFFDA
-STACK:
-STATUS:		DB  0
-DATA:		DB  0
+	        ORG 65498
+STACK:                                                   ; 65498
+STATUS:		DB  0                                        ; 65498
+DATA:		DB  0                                        ; 65499
 VISOR:		DAB [36]
 
 ;> Programa principal
 ;>-----------------------------------------------------------------------------
-            ORG 0
-            JSR R7,_S_LIMPA_VISOR_ULTRA ; Limpa mensagem da biblioteca
+	        ORG 0
+	        MOV #STACK,R6                                ; programa: aponta SP para STACK
+	        JSR R7,_S_LIMPA_VISOR_ITERATIVA ; Limpa mensagem da biblioteca
 
-;> Escreve autor no visor
-	        MOV #27,R0                   ; tamanho da mensagem (em caracteres)
-	        MOV #id_autor,R1             ; endereco da mensagem a ser escrita no visor
-	        MOV #65500,R2                ; endereco do LED onde deve iniciar a mensagem
+
+	        MOV #27,R0
+	        MOV #id_autor,R1
+	        MOV #65500,R2
 	        JSR R7,_S_ESCREVER_NO_VISOR
-            HLT
-            JMP InicioWhile
-
-; Aguardar tecla enter
-; void main(void) {
-; char c ---> R0
-
-; while ( (c=getchar()) != 'F') {
-InicioWhile:
-	JSR		R7,getchar
-	CMP		R0,#'F'
-	BEQ		FimWhile
-
-; hw_visor[0] = c;
-	MOV		R0,VISOR
-	JMP		InicioWhile
-
-; }
-FimWhile:
-
-; }
-
-
-; Finaliza programa
-;            JMP fim
+	        JSR R7,KBD_WAIT_ENTER
 
 ;fim:
 ;            JMP _S_ENCERRAR
@@ -71,23 +48,16 @@ FimWhile:
 ;> Subrotinas
 ;>-----------------------------------------------------------------------------
 
-; char getchar(void)
-; char c -> R0
-getchar:
-
-; while ( hw_status != 0x80 );
-getchar_While:
-	        CMP		STATUS,#H80
-	        BNE		getchar_While
-
-; c = hw_data;
-	        MOV		DATA,R0
-
-; hw_status = 0;
-	        CLR		STATUS
-
-; return c;
-	        RTS		R7
+;> Rotina para aguardar até que tecla enter seja pressionada
+;>
+;> JSR R7,KBD_WAIT_ENTER
+KBD_WAIT_ENTER:
+          CLR STATUS            ; Limpa estado anterior do teclado
+          TST STATUS            ; Já digitaram alguma tecla?
+          BEQ #-6               ; Ve se já foi digitado
+          CMP #13, DATA         ; Digitaram algo; Compara tela digitada com enter
+          BNE KBD_WAIT_ENTER    ; Caso não seja enter, segue esperando
+          RTS R7                ; Retorna ao ponto em que foi chamada
 
 ;>---------------------------------------------<
 ;> AS SUBROTINAS DEVEM INICIAR SOMENTE APOS A  <
