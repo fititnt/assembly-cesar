@@ -72,6 +72,7 @@ T_MENU:
 	        MOV #65500,R2
 	        JSR R7,_S_ESCREVER_NO_VISOR
 
+	        ;JSR R7,KBD_WAIT
 	        JSR R7,KBD_WAIT_ENTER
 	        JMP T_GERAL
 
@@ -143,11 +144,22 @@ T_ENCERRAMENTO:
 	        MOV #MSG_BYE,R1
 	        MOV #65500,R2
 	        JSR R7,_S_ESCREVER_NO_VISOR
+
             HLT                                          ; Bye!
 
 
 ;> Subrotinas
 ;>-----------------------------------------------------------------------------
+
+;> Rotina para aguardar qualquer tecla
+;>
+;> JSR R7,KBD_WAIT
+KBD_WAIT:
+          CLR STATUS            ; Limpa estado anterior do teclado
+KBD_WAIT_SUB:
+          TST STATUS            ; Já digitaram alguma tecla?
+          BEQ KBD_WAIT_SUB      ; Se não houve alteração, testa novamente
+          RTS R7                ; Retorna ao ponto em que foi chamada
 
 ;> Rotina para aguardar até que tecla enter seja pressionada
 ;>
