@@ -1,6 +1,6 @@
 
 	ORG	0
-	
+
 	MOV	#Stack,R6
 
 
@@ -30,7 +30,7 @@ uint2str:
 
 	MOV	#Tab10,R4	; pTab10 = Tab10;
 	MOV	#4,R5		; Lacos = 4;
-	
+
 Loop:				; do {
 	MOV	#'0',R3		; 	dig = '0';
 
@@ -47,22 +47,22 @@ EhMenor:
 	OR	R3,R0
 	MOV	R0,-1(R1)
 	INC	R1
-	
+
 	ADD	#2,R4		; 	++pTab10;
 
 	SOB	R5,Loop		; } while (--Lacos);
-	
+
 	ADD	#'0',R2		; *s++ = n + ‘0’;
 	MOV	-1(R1),R0
 	AND	#HFF00,R0
 	OR	R2,R0
 	MOV	R0,-1(R1)
 	INC	R1
-	
+
 	MOV	-1(R1),R0	; *s++ = '\0;
 	AND	#HFF00,R0
 	MOV	R0,-1(R1)
-	
+
 	RTS	R7
 
 
@@ -73,6 +73,6 @@ EhMenor:
 Stack:
 
 	org	65500
-String:		DAB	'123456'
+String:		DAB	'     '
 
 
