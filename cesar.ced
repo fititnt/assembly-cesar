@@ -27,7 +27,7 @@ DATA_P_LUC: DW  0                                       ; Ponteiro, ListadeLuc
 
 id_autor:   DAB 'Emerson Rocha Luiz - 143503'           ; 27 chars
 MSG_BYE:    DAB 'Programa encerrado'                    ; 18 chars
-MSG_T_RR:   DAB 'Engenheiros: 99   Cidades:  999'       ; 31 chars
+MSG_T_RR:   DAB 'Engenheiros:      Cidades:     '       ; 31 chars
 MSG_MENU:   DAB 'Selecione uma acao: [r] [e] [g] [f]'   ; 35 chars
 MSG_GERAL1: DAB 'Maior lucro: R$ 99999,00 do eng: 99 '  ; 36 chars
 MSG_GERAL2: DAB 'Menor lucro: R$     9,00 do eng:  9 '  ; 36 chars
@@ -35,7 +35,7 @@ MSG_SENG:   DAB 'Engenheiro:'                           ; 11 chars
 MSG_SERRO:  DAB 'Engenheiro invalido'                   ; 19 chars
 MSG_RENG:   DAB 'Engenheiro 99, lucro R$ 99999,00'     ; 32 chars
 KEY_ENTER:  DB  13                                      ; Tecla Enter, ASCII = 13
-DATA_STR:   DAB '00000'                                 ; String temporaria
+DATA_STR:   DAB '      '                                 ; String temporaria
 
 
 	        ORG 65498
@@ -72,14 +72,26 @@ T_R_RESUMIDO:
             ; nº engenheiros
             MOV #STACK,R6
             MOV DATA_N_ENG,-(R6)
-            MOV #65513,-(R6)
+            MOV #DATA_STR,-(R6)                           ; DATA_STR contém string
             JSR R7,uint2str
+
+            MOV #2,R0
+            MOV #DATA_STR,R1
+            ADD #3,R1
+            MOV #65513,R2
+            JSR R7,_S_ESCREVER_NO_VISOR
 
             ; nº cidades
             MOV #STACK,R6
             MOV DATA_N_LUC,-(R6)
-            MOV #65527,-(R6)
+            MOV #DATA_STR,-(R6)
             JSR R7,uint2str
+
+            MOV #3,R0
+            MOV #DATA_STR,R1
+            ADD #2,R1
+            MOV #65527,R2
+            JSR R7,_S_ESCREVER_NO_VISOR
 ;
 
 	        JSR R7,KBD_WAIT_ENTER
@@ -99,7 +111,7 @@ T_MENU_WAIT:
             CMP R0,#'g'                                   ; tecla = enter?
             BEQ T_GERAL                                   ; Vai Tela T_GERAL
             CMP R0,#'r'                                   ; tecla = r?
-            BEQ T_R_RESUMIDO                              ; Vai Tela T_R_RESUMIDO
+            BEQ T_MENU_WAIT_GO_T_R_RESUMIDO               ; Vai Tela T_R_RESUMIDO
             CMP R0,#'e'                                   ; tecla = e?
             BEQ T_SEL_ENG                                 ; Vai Tela T_SEL_ENG
             CMP R0,#'f'                                   ; tecla = f?
@@ -109,6 +121,9 @@ T_MENU_WAIT:
 ; Pulos mais distante, para evitar desvio condicional superior a 8 bits
 T_MENU_WAIT_GO_T_ENCERRAMENTO:
             JMP T_ENCERRAMENTO
+
+T_MENU_WAIT_GO_T_R_RESUMIDO:
+            JMP T_R_RESUMIDO
 
 ;;;;;;;;;;; Tela: Relatório "Geral"
 T_GERAL:
@@ -207,6 +222,20 @@ KBD_WAIT_ENTER:
           CMP #13, DATA         ; Digitaram algo; Compara tela digitada com enter
           BNE KBD_WAIT_ENTER    ; Caso não seja enter, segue esperando
           RTS R7                ; Retorna ao ponto em que foi chamada
+
+;> Rotina para escrever no visor
+;>
+;> MOV #endmensagem,R1          ; endereco da mensagem a ser escrita no visor
+;> MOV #endvisor,R2             ; endereco do LED onde deve iniciar a mensagem
+;> JSR R7,KBD_WAIT
+VISOR_WRITE_NUMBER:
+          MOV #5,R0              ; tamanho da mensagem (em caracteres)
+          ; R1 e R2 ja foram preenchidos na chamada desta funcao
+          ;MOV #endmensagem,R1   ; endereco da mensagem a ser escrita no visor
+          ;MOV #endvisor,R2             ; endereco do LED onde deve iniciar a mensagem
+          JSR R7,_S_ESCREVER_NO_VISOR
+          RTS R7
+
 
 ; @todo remover estrutura de dados abaixo
 
