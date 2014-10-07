@@ -64,17 +64,23 @@ VISOR:		DAB [36]
 T_R_RESUMIDO:
 
 	        JSR R7,_S_LIMPA_VISOR_ULTRA                  ; Limpa mensagem da biblioteca
-;
-            ;MOV #STACK,R6
-            ;MOV #69,-(R6)        ; debug, move int +69 para pilha
-            ;MOV #DATA_STR,-(R6)  ; debug, move posição da string temporaria para pilha
-            ;JSR R7,uint2str
-
-;
 	        MOV #31,R0
 	        MOV #MSG_T_RR,R1
 	        MOV #65500,R2
 	        JSR R7,_S_ESCREVER_NO_VISOR
+
+            ; nº engenheiros
+            MOV #STACK,R6
+            MOV DATA_N_ENG,-(R6)
+            MOV #65513,-(R6)
+            JSR R7,uint2str
+
+            ; nº cidades
+            MOV #STACK,R6
+            MOV DATA_N_LUC,-(R6)
+            MOV #65527,-(R6)
+            JSR R7,uint2str
+;
 
 	        JSR R7,KBD_WAIT_ENTER
 	        JMP T_MENU
