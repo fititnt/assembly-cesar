@@ -33,7 +33,7 @@ MSG_GERAL1: DAB 'Maior lucro: R$ 99999,00 do eng: 99 '  ; 36 chars
 MSG_GERAL2: DAB 'Menor lucro: R$     9,00 do eng:  9 '  ; 36 chars
 MSG_SENG:   DAB 'Engenheiro:'                           ; 11 chars
 MSG_SERRO:  DAB 'Engenheiro invalido'                   ; 19 chars
-MSG_RENG:   DAB  'Engenheiro 99, lucro R$ 99999,00'     ; 32 chars
+MSG_RENG:   DAB 'Engenheiro 99, lucro R$ 99999,00'     ; 32 chars
 KEY_ENTER:  DB  13                                      ; Tecla Enter, ASCII = 13
 DATA_STR:   DAB '00000'                                 ; String temporaria
 
@@ -96,16 +96,13 @@ T_MENU_WAIT:
             BEQ T_R_RESUMIDO                              ; Vai Tela T_R_RESUMIDO
 	        CMP R0,#'e'                                   ; tecla = e?
             BEQ T_SEL_ENG                                 ; Vai Tela T_SEL_ENG
+            CMP R0,#'f'                                   ; tecla = f?
+            BEQ T_MENU_WAIT_GO_T_ENCERRAMENTO             ; Vai tela T_ENCERRAMENTO
+	        BR  T_MENU_WAIT                               ; N.D.A, volta a esperar
 
-            ; @todo resolver para tecla f
-            ; BEQ estoura pra F
-	        ; O valor 138 está fora da faixa permitida para Desvio Condicional (8 bits)
-	        ;CMP R0,#'f'                                   ; tecla = f?
-	        ;MOV T_ENCERRAMENTO, R1
-            ;BEQ (R1)                            ; Vai Tela T_ENCERRAMENTO
-            ;SUB #138,R0
-
-	        BR  T_MENU_WAIT                                ; N.D.A, volta a esperar
+; Pulos mais distante, para evitar desvio condicional superior a 8 bits
+T_MENU_WAIT_GO_T_ENCERRAMENTO:
+            JMP T_ENCERRAMENTO
 
 ;;;;;;;;;;; Tela: Relatório "Geral"
 T_GERAL:
