@@ -4,7 +4,8 @@
 	MOV	#Stack,R6
 
 	; Teste com valor positivo
-	MOV	#1200,-(R6)		; n
+	;MOV	#1200,-(R6)		; n
+	MOV	#55555,-(R6)		; n
 	MOV	#String,-(R6)	; s
 	JSR	R7,uint2str
 	ADD	#4,R6
@@ -15,44 +16,61 @@
 	;JSR	R7,int2str
 	;ADD	#4,R6
 
-    MOV	#Stack2,R6
-    MOV #Stack,R5
-    MOV R5,R2
-    JSR R7,_S_PREENCHE_VISOR
-    MOV -(R5),R2
-    JSR R7,_S_PREENCHE_VISOR
-    MOV -(R5),R2
-    JSR R7,_S_PREENCHE_VISOR
-    MOV -(R5),R2
-    JSR R7,_S_PREENCHE_VISOR
-    MOV #'f',R2
-    JSR R7,_S_PREENCHE_VISOR
+	MOV #5,R0
+	MOV -(R6),R1
+	MOV -(R6),R1
+	;MOV #String,R1
+	MOV #65500,R2
+	JSR R7,_S_ESCREVER_NO_VISOR
 	HLT
 
-
 ;>
 ;>
-;> Subrotina para "preencher" o visor com um caractere
+;> Subrotina para escrever mensagem no visor
 ;>
 ;> Chamada da subrotina:
 ;>
-;> MOV #codASCII,R2             ; colocar no R2 o caractere a ser usado
-;> JSR R7,_S_PREENCHE_VISOR
+;> MOV #tammensagem,R0          ; tamanho da mensagem (em caracteres)
+;> MOV #endmensagem,R1          ; endereco da mensagem a ser escrita no visor
+;> MOV #endvisor,R2             ; endereco do LED onde deve iniciar a mensagem
+;> JSR R7,_S_ESCREVER_NO_VISOR
 ;>
 
-_S_PREENCHE_VISOR:
-          MOV R0,-(R6)          ; salva R0 na pilha
-          MOV R1,-(R6)          ; salva R1 na pilha
-          MOV #65500,R1         ; move end. do visor p/R1
-          MOV #36,R0            ; move 36 para contador
-__MAIS1_LED:
-          MOV R2,(R1)           ; move caractere p/1 LED do visor
-          INC R1                ; aponta p/LED seguinte
-          SOB R0,__MAIS1_LED    ; subtrai 1 do contador
-                                ; se <> 0, repete o laco
-          MOV (R6)+,R1          ; restaura R1
-          MOV (R6)+,R0          ; restaura R0
+_S_ESCREVER_NO_VISOR:
+__VOLTA_ESCR:
+          MOV (R1),R3           ; coloca 2 caracteres em R3
+          ASR R3                ; alinha primeiro caractere
+          ASR R3                ; a direita do registrador,
+          ASR R3                ; porque quando se escreve
+          ASR R3                ; na memoria a partir do
+          ASR R3                ; endereco 65500 apenas o byte
+          ASR R3                ; menos significativo e' escrito
+          ASR R3                ; na posicao correspondente
+          ASR R3                ; a um LED do visor
+          MOV R3,(R2)           ; move para o visor
+          SOB R0,__SEGUNDO      ; se ja moveu todo o texto,
           RTS R7                ; retorna ao ponto de chamada
+                                ; senao, vai mover o segundo
+                                ; caractere da mesma palavra
+__SEGUNDO:
+          INC R2                ; aponta para proximo LED
+          BEQ __FIM_VISOR2      ; fim do visor - volta ao LED 00
+__CONTINUA2:
+          MOV (R1)+,R3          ; mesmos 2 caracteres em R3 e
+                                ; incrementa apontador do texto
+          MOV R3,(R2)           ; desta vez, move o segundo byte
+          SOB R0,__PROXIMO_LED  ; se ja moveu todo o texto,
+          RTS R7                ; retorna ao ponto de chamada
+__PROXIMO_LED:
+          INC R2                ; senao, aponta proximo LED
+          BNE __VOLTA_ESCR      ; e repete o laco
+                                ; fim do visor - volta ao LED 00
+__FIM_VISOR1:
+          MOV #65500,R2         ; aponta para primeiro LED
+          BR  __VOLTA_ESCR      ; volta a escrever no visor
+__FIM_VISOR2:
+          MOV #65500,R2         ; aponta para primeiro LED
+          BR  __CONTINUA2       ; volta a escrever no visor
 
 ;**********************************************************
 ; void int2str(char *s, uint n) {
