@@ -18,6 +18,7 @@
             ORG 1024
 
 id_autor:   DAB 'Emerson Rocha Luiz - 143503'           ; 27 chars
+MSG_BYE:    DAB 'Programa encerrado'                    ; 18 chars
 KEY_ENTER:  DB  13                                      ; Tecla Enter, ASCII = 13
 
 
@@ -30,9 +31,10 @@ VISOR:		DAB [36]
 ;> Programa principal
 ;>-----------------------------------------------------------------------------
 	        ORG 0
-	        MOV #STACK,R6                                ; programa: aponta SP para STACK
-	        JSR R7,_S_LIMPA_VISOR_ITERATIVA ; Limpa mensagem da biblioteca
+	        MOV #STACK,R6                                ; Aponta SP para STACK
+	        JSR R7,_S_LIMPA_VISOR_ITERATIVA              ; Limpa mensagem da biblioteca
 
+;;;;;;;;;;; Tela: Identificação do autor
 
 	        MOV #27,R0
 	        MOV #id_autor,R1
@@ -40,9 +42,32 @@ VISOR:		DAB [36]
 	        JSR R7,_S_ESCREVER_NO_VISOR
 	        JSR R7,KBD_WAIT_ENTER
 
-;fim:
-;            JMP _S_ENCERRAR
-             HLT
+	        JMP T_ENCERRAMENTO
+
+;;;;;;;;;;; Tela: Relatório de resumo
+
+;;;;;;;;;;; Tela: Relatorio resumido
+
+;;;;;;;;;;; Tela: menu de ações
+
+;;;;;;;;;;; Tela: Relatório "Geral"
+
+;;;;;;;;;;; Tela: Seleção do engenheiro
+
+;;;;;;;;;;; Tela: Mensagem de erro
+
+;;;;;;;;;;; Tela: Relatorio do engenheiro
+
+;;;;;;;;;;; Tela: Mensagem de encerramento
+T_ENCERRAMENTO:
+
+	        MOV #STACK,R6                                ; Aponta SP para STACK
+	        JSR R7,_S_LIMPA_VISOR_ITERATIVA              ; Limpa mensagem da biblioteca
+	        MOV #18,R0
+	        MOV #MSG_BYE,R1
+	        MOV #65500,R2
+	        JSR R7,_S_ESCREVER_NO_VISOR
+            HLT                                          ; Bye!
 
 
 ;> Subrotinas
