@@ -1,0 +1,9 @@
+Símbolo     Valor Decimal   Valor Hexadecimal
+-------     -------------   -----------------
+TAB10                  21                  15
+UINT2STR               29                  1D
+LOOP                   45                  2D
+LOOPINTERNO             49                  31
+EHMENOR                61                  3D
+STACK                2164                 874
+STRING              65500                FFDC

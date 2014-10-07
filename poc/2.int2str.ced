@@ -15,9 +15,44 @@
 	;JSR	R7,int2str
 	;ADD	#4,R6
 
-
+    MOV	#Stack2,R6
+    MOV #Stack,R5
+    MOV R5,R2
+    JSR R7,_S_PREENCHE_VISOR
+    MOV -(R5),R2
+    JSR R7,_S_PREENCHE_VISOR
+    MOV -(R5),R2
+    JSR R7,_S_PREENCHE_VISOR
+    MOV -(R5),R2
+    JSR R7,_S_PREENCHE_VISOR
+    MOV #'f',R2
+    JSR R7,_S_PREENCHE_VISOR
 	HLT
 
+
+;>
+;>
+;> Subrotina para "preencher" o visor com um caractere
+;>
+;> Chamada da subrotina:
+;>
+;> MOV #codASCII,R2             ; colocar no R2 o caractere a ser usado
+;> JSR R7,_S_PREENCHE_VISOR
+;>
+
+_S_PREENCHE_VISOR:
+          MOV R0,-(R6)          ; salva R0 na pilha
+          MOV R1,-(R6)          ; salva R1 na pilha
+          MOV #65500,R1         ; move end. do visor p/R1
+          MOV #36,R0            ; move 36 para contador
+__MAIS1_LED:
+          MOV R2,(R1)           ; move caractere p/1 LED do visor
+          INC R1                ; aponta p/LED seguinte
+          SOB R0,__MAIS1_LED    ; subtrai 1 do contador
+                                ; se <> 0, repete o laco
+          MOV (R6)+,R1          ; restaura R1
+          MOV (R6)+,R0          ; restaura R0
+          RTS R7                ; retorna ao ponto de chamada
 
 ;**********************************************************
 ; void int2str(char *s, uint n) {
@@ -107,3 +142,7 @@ String:		DAB	'123456'
 ; Tamanho do stack de 1024 palavras
 		DAW		[1024]
 Stack:
+
+; Tamanho do stack de 1024 palavras
+		DAW		[1024]
+Stack2:

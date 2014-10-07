@@ -1,0 +1,14 @@
+Símbolo     Valor Decimal   Valor Hexadecimal
+-------     -------------   -----------------
+_S_PREENCHE_VISOR             61                  3D
+__MAIS1_LED             73                  49
+INT2STR                84                  54
+EHPOSITIVO            114                  72
+TAB10                 127                  7F
+UINT2STR              135                  87
+LOOP                  151                  97
+LOOPINTERNO            155                  9B
+EHMENOR               167                  A7
+STRING                222                  DE
+STACK                2276                 8E4
+STACK2               4324                10E4
