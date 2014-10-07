@@ -85,13 +85,11 @@ T_MENU_WAIT:
             ; BEQ estoura pra F
 	        ; O valor 138 está fora da faixa permitida para Desvio Condicional (8 bits)
 	        ;CMP R0,#'f'                                   ; tecla = f?
-            ;BEQ T_ENCERRAMENTO                            ; Vai Tela T_ENCERRAMENTO
+	        ;MOV T_ENCERRAMENTO, R1
+            ;BEQ (R1)                            ; Vai Tela T_ENCERRAMENTO
             ;SUB #138,R0
 
-
 	        BR  T_MENU_WAIT                                ; N.D.A, volta a esperar
-	        ;JSR R7,KBD_WAIT_ENTER
-	        ;JMP T_GERAL
 
 ;;;;;;;;;;; Tela: Relatório "Geral"
 T_GERAL:
@@ -112,8 +110,7 @@ T_GERAL:
 
 	        JSR R7,KBD_WAIT_ENTER
 
-
-	        JMP T_SEL_ENG
+	        JMP T_MENU
 
 ;;;;;;;;;;; Tela: Seleção do engenheiro
 T_SEL_ENG:
@@ -123,6 +120,8 @@ T_SEL_ENG:
 	        MOV #MSG_SENG,R1
 	        MOV #65500,R2
 	        JSR R7,_S_ESCREVER_NO_VISOR
+
+; @todo, resolver navegacao para pontos a partir daqui
 
 	        JSR R7,KBD_WAIT_ENTER
 	        JMP T_SEL_ERRO
