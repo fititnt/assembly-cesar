@@ -33,8 +33,9 @@ MSG_GERAL1: DAB 'Maior lucro: R$ 99999,00 do eng: 99 '  ; 36 chars
 MSG_GERAL2: DAB 'Menor lucro: R$     9,00 do eng:  9 '  ; 36 chars
 MSG_SENG:   DAB 'Engenheiro:'                           ; 11 chars
 MSG_SERRO:  DAB 'Engenheiro invalido'                   ; 19 chars
-MSG_RENG:  DAB  'Engenheiro 99, lucro R$ 99999,00'      ; 32 chars
+MSG_RENG:   DAB  'Engenheiro 99, lucro R$ 99999,00'     ; 32 chars
 KEY_ENTER:  DB  13                                      ; Tecla Enter, ASCII = 13
+DATA_STR:   DAB '00000'                                 ; String temporaria
 
 
 	        ORG 65498
@@ -63,6 +64,13 @@ VISOR:		DAB [36]
 T_R_RESUMIDO:
 
 	        JSR R7,_S_LIMPA_VISOR_ULTRA                  ; Limpa mensagem da biblioteca
+;
+            ;MOV #STACK,R6
+            ;MOV #69,-(R6)        ; debug, move int +69 para pilha
+            ;MOV #DATA_STR,-(R6)  ; debug, move posição da string temporaria para pilha
+            ;JSR R7,uint2str
+
+;
 	        MOV #31,R0
 	        MOV #MSG_T_RR,R1
 	        MOV #65500,R2
@@ -241,84 +249,92 @@ eng10:  daw 3,1,2,7					; = 50
 ;>-----------------------------------------------------------------------------
 
 ;**********************************************************
-; void str2int( int *n, char *s)
-;	2(R6) -> n -> R3
-;	4(R6) -> s -> R0
-;
-;**********************************************************
-str2int_2:
-	MOV	2(R6),R3	; R3 = n
-	MOV	4(R6),R0	; R0 = s
-
-	MOV	R0,-(R6)	; *n = str2int(s);
-	JSR	R7,str2int_1
-	ADD	#2,R6
-
-	MOV	R0,(R3)
-
-	RTS	R7
-
-
-;**********************************************************
-; int str2int( char *s)
+; void int2str(char *s, uint n) {
 ;	2(R6) -> s -> R1
+;	4(R6) -> n -> R2
 ;
-;	int neg -> R5
-;	int n   -> R4
 ;**********************************************************
-str2int_1:
-	MOV	2(R6),R1	; R1 = s
+int2str:
+	MOV	2(R6),R1	; s
+	MOV	4(R6),R2	; n
 
-	CLR	R5			; neg = false;
+	BPL	EhPositivo	; 	if ( n < 0 ) {
 
-	MOV	-1(R1),R0	; if ( *s == '-' ) {
+	NEG	R2			; 		n = -n;
+
+	MOV	-1(R1),R0	; 		*s++ = '-';
 	AND	#HFF00,R0
-	CMP	R0,#'-'
-	BNE	EhPositivo
-
-	INC	R5			;	neg = true
-	INC	R1			;	++s;
-					; }
+	OR	#'-',R0
+	MOV	R0,-1(R1)
+	INC	R1
+					; 	}
 
 EhPositivo:
-	CLR	R4			; n = 0;
+	MOV	R2,-(R6)	; 	uint2str(s,n);
+	MOV	R1,-(R6)
+	JSR	R7,uint2str
+	ADD	#4,R6
 
+	RTS	R7			; }
+
+
+;**********************************************************
+; void uint2str(char *s, uint n)
 ;	2(R6) -> s -> R1
-;	int neg -> R5
-;	int n   -> R4
-Loop:
-	MOV	-1(R1),R0	; while ( *s != \0 ) {
-	AND	#H00FF,R0
-	BEQ	LoopOutput
+;	4(R6) -> n -> R2
+;
+;	Lacos  -> R5
+;	pTab10 -> R4
+;	dig    -> R3
+;
+;**********************************************************
+Tab10:		DAW	10000, 1000, 100, 10
+uint2str:
+	MOV	2(R6),R1	; R1 = s
+	MOV	4(R6),R2	; R2 = n
 
-	SUB	#'0',R0		;	n = 10 * n + (*s - '0');
-	ASL	R4
-	MOV	R4,R2
-	ASL	R4
-	ASL	R4
-	ADD	R2,R4
-	ADD	R0,R4
+	MOV	#Tab10,R4	; pTab10 = Tab10;
+	MOV	#4,R5		; Lacos = 4;
 
-	INC	R1			;	++s;
+Loop:				; do {
+	MOV	#'0',R3		; 	dig = '0';
 
-	JMP	Loop		; }
+LoopInterno:
+	CMP	R2,(R4)		; 	while (n >= *pTab10) {
+	BLT	EhMenor
+	INC	R3			; 		++dig;
+	SUB	(R4),R2		; 		n -= *pTab10;
+	JMP	LoopInterno	; 	}
 
-LoopOutput:
-	TST	R5			; if (neg) {
-	BEQ	ret_str2int_1
+EhMenor:
+	MOV	-1(R1),R0	; 	*s++ = dig;
+	AND	#HFF00,R0
+	OR	R3,R0
+	MOV	R0,-1(R1)
+	INC	R1
 
-	NEG	R4			;	n = - n;
-					; }
-ret_str2int_1:
-	MOV	R4,R0		; return n;
+	ADD	#2,R4		; 	++pTab10;
+
+	SOB	R5,Loop		; } while (--Lacos);
+
+	ADD	#'0',R2		; *s++ = n + 0;
+	MOV	-1(R1),R0
+	AND	#HFF00,R0
+	OR	R2,R0
+	MOV	R0,-1(R1)
+	INC	R1
+
+	MOV	-1(R1),R0	; *s++ = '\0;
+	AND	#HFF00,R0
+	MOV	R0,-1(R1)
+
 	RTS	R7
 
 
-String:		DAB	'100',0
-Int:		DW	0
+;String:		DAB	'123456'
 
 ; Tamanho do stack de 1024 palavras
-;			DAW	[1024]
+;		DAW		[1024]
 ;Stack:
 
 ;>---------------------------------------------<
