@@ -35,8 +35,9 @@ MSG_SENG:   DAB 'Engenheiro:'                           ; 11 chars
 MSG_SERRO:  DAB 'Engenheiro invalido'                   ; 19 chars
 MSG_RENG:   DAB 'Engenheiro 99, lucro R$ 99999,00'     ; 32 chars
 KEY_ENTER:  DB  13                                      ; Tecla Enter, ASCII = 13
-DATA_STR:   DAB '       '                               ; String temporaria. 7 caract, 2 usados
 
+            ORG 10000
+DATA_STR:   DAB '       '                               ; String temporaria. 7 caract, 2 usados
 
 	        ORG 65498
 STACK:                                                   ; 65498
@@ -75,6 +76,11 @@ T_R_RESUMIDO:
             MOV #DATA_STR,-(R6)                           ; DATA_STR contém string
             JSR R7,uint2str
 
+            ; trim
+            ;MOV DATA_N_ENG,R0
+            ;MOV #DATA_STR,R1
+            ;JSR R7,LTRIM
+
             MOV #2,R0
             MOV #DATA_STR,R1
             ADD #3,R1
@@ -88,15 +94,20 @@ T_R_RESUMIDO:
             JSR R7,uint2str
 
             ; trim
-            MOV DATA_N_LUC,R0
-            MOV #DATA_STR,R1
-            JSR R7,LTRIM
+            ;MOV #777,R5; debug
+            ;MOV DATA_N_LUC,R0
+            ;MOV #DATA_STR,R1
+            ;JSR R7,LTRIM
 
-            MOV #3,R0
+            MOV #5,R0;3
             MOV #DATA_STR,R1
-            ADD #2,R1
+            ;ADD #2,R1
             MOV #65527,R2
             JSR R7,_S_ESCREVER_NO_VISOR
+
+            MOV DATA_N_LUC,R0
+            MOV #65527,R1
+            JSR R7,LTRIM
 ;
 
 	        JSR R7,KBD_WAIT_ENTER
@@ -242,23 +253,24 @@ VISOR_WRITE_NUMBER:
           RTS R7
 
 ;> ltrim: Rotina para substituir zeros iniciais de um numero (até 5 digitos)
+;> *faz trim a cada dois bytes quando não usada no visor*
 ;>
-;> MOV #valorinteiro,R0           ; valor inteiro da string
+;> MOV #valorinteiro,R0           ; valor inteiro que a string representa
 ;> MOV #endmensagem,R1            ; endereco da mensagem a ser escrita no visor
 
 ;> JSR R7,LTRIM
 LTRIM:
           MOV R1,R5                ; Ponteiro para campo atual
-          CMP R1,#10000
+          CMP R0,#10000
           BGE LTRIM_NOTRIM
           MOV #' ', 1(R1)          ; trim primeiro
-          CMP R1,#1000
+          CMP R0,#1000
           BGE LTRIM_NOTRIM
           MOV #' ', 2(R1)          ; trim segundo
-          CMP R1,#100
+          CMP R0,#100
           BGE LTRIM_NOTRIM
           MOV #' ', 3(R1)          ; trim terceiro
-          CMP R1,#10
+          CMP R0,#10
           BGE LTRIM_NOTRIM
           MOV #' ', 4(R1)          ; trim quarto
 LTRIM_NOTRIM:
