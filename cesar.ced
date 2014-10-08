@@ -314,45 +314,49 @@ LTRIM_NOTRIM:
           RTS R7
 
 
-; @todo remover estrutura de dados abaixo
+; Nota: dados apenas para teste. Descomentar para teste local
 
 ;------------------------------------------------------------------------------
 ;	Estruturas de dados
 ;------------------------------------------------------------------------------
-		ORG H8000
-ne:		DW		11
-le:		DW		ListaDeEngenheiros
-nc:		DW		10
-lc:		DW		ListaDeLucros
+;		ORG H8000
+;ne:		DW		11
+;le:		DW		ListaDeEngenheiros
+;nc:		DW		10
+;lc:		DW		ListaDeLucros
+;
+;
+;ListaDeEngenheiros:
+;		DW eng0
+;		DW eng1
+;		DW eng2
+;		DW eng3
+;		DW eng4
+;		DW eng5
+;		DW eng6
+;		DW eng7
+;		DW eng8
+;		DW eng9
+;		DW eng10
+;
+;
+;ListaDeLucros: DAW 500,-100,350,-50,1200,950,800,-200,100,1000
+;
+;eng0:	DAW 4,0,1,2,3				; = 700
+;eng1:	DAW 5,4,5,6,7,8				; = 2.850
+;eng2:	DAW 3,9,5,1					; = 1.850
+;eng3:	DAW 5,0,2,4,6,8				; = 2.950
+;eng4:	DAW 10,0,1,2,3,4,5,6,7,8,9	; = 4.550
+;eng7:	daw 3,1,3,7					; = -350
+;eng6:	daw 1,4						; = 1.200
+;eng5:	daw 0						; = 0
+;eng8:	daw 7,0,2,4,5,6,8,9			; = 4.900
+;eng9:   daw 2,1,8					; = 0
+;eng10:  daw 3,1,2,7					; = 50
 
-
-ListaDeEngenheiros:
-		DW eng0
-		DW eng1
-		DW eng2
-		DW eng3
-		DW eng4
-		DW eng5
-		DW eng6
-		DW eng7
-		DW eng8
-		DW eng9
-		DW eng10
-
-
-ListaDeLucros: DAW 500,-100,350,-50,1200,950,800,-200,100,1000
-
-eng0:	DAW 4,0,1,2,3				; = 700
-eng1:	DAW 5,4,5,6,7,8				; = 2.850
-eng2:	DAW 3,9,5,1					; = 1.850
-eng3:	DAW 5,0,2,4,6,8				; = 2.950
-eng4:	DAW 10,0,1,2,3,4,5,6,7,8,9	; = 4.550
-eng7:	daw 3,1,3,7					; = -350
-eng6:	daw 1,4						; = 1.200
-eng5:	daw 0						; = 0
-eng8:	daw 7,0,2,4,5,6,8,9			; = 4.900
-eng9:   daw 2,1,8					; = 0
-eng10:  daw 3,1,2,7					; = 50
+;------------------------------------------------------------------------------
+;	Estruturas de dados, fim
+;------------------------------------------------------------------------------
 
 ;> Subrotinas auxiliares
 ;>-----------------------------------------------------------------------------
