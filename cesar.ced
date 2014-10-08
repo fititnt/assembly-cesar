@@ -25,16 +25,15 @@ DATA_P_LUC: DW  0                                       ; Ponteiro, ListadeLuc
 
             ORG 8096
 
-id_autor:   DAB 'Emerson Rocha Luiz - 143503'           ; 27 chars
-MSG_BYE:    DAB 'Programa encerrado'                    ; 18 chars
-MSG_T_RR:   DAB 'Engenheiros:      Cidades:     '       ; 31 chars
-MSG_MENU:   DAB 'Selecione uma acao: [r] [e] [g] [f]'   ; 35 chars
-MSG_GERAL1: DAB 'Maior lucro: R$ 99999,00 do eng: 99 '  ; 36 chars
-MSG_GERAL2: DAB 'Menor lucro: R$     9,00 do eng:  9 '  ; 36 chars
-MSG_SENG:   DAB 'Engenheiro:'                           ; 11 chars
-MSG_SERRO:  DAB 'Engenheiro invalido'                   ; 19 chars
-MSG_RENG:   DAB 'Engenheiro 99, lucro R$ 99999,00'     ; 32 chars
-KEY_ENTER:  DB  13                                      ; Tecla Enter, ASCII = 13
+id_autor:   DAB 'Emerson Rocha Luiz - 143503         '  ; 36 caracteres
+MSG_BYE:    DAB 'Programa encerrado                  '
+MSG_T_RR:   DAB 'Engenheiros:      Cidades:          '
+MSG_MENU:   DAB 'Selecione uma acao: [r] [e] [g] [f] '
+MSG_GERAL1: DAB 'Maior lucro: R$ 99999,00 do eng: 99 '
+MSG_GERAL2: DAB 'Menor lucro: R$     9,00 do eng:  9 '
+MSG_SENG:   DAB 'Engenheiro:                         '
+MSG_SERRO:  DAB 'Engenheiro invalido                 '
+MSG_RENG:   DAB 'Engenheiro 99, lucro R$ 99999,00    '
 DATA_STR:   DAB '       '                               ; String temporaria. 7 caract, 2 usados
 
 	        ORG 65498
@@ -47,11 +46,10 @@ VISOR:		DAB [36]
 ;>-----------------------------------------------------------------------------
 	        ORG 0
 	        MOV #STACK,R6                                ; Aponta SP para STACK
-	        JSR R7,_S_LIMPA_VISOR_ULTRA                  ; Limpa mensagem da biblioteca
 
 ;;;;;;;;;;; Tela: Identificação do autor
 
-	        MOV #27,R0
+	        MOV #36,R0
 	        MOV #id_autor,R1
 	        MOV #65500,R2
 	        JSR R7,_S_ESCREVER_NO_VISOR
@@ -62,8 +60,7 @@ VISOR:		DAB [36]
 ;;;;;;;;;;; Tela: Relatorio resumido
 T_R_RESUMIDO:
 
-	        JSR R7,_S_LIMPA_VISOR_ULTRA                  ; Limpa mensagem da biblioteca
-	        MOV #31,R0
+	        MOV #36,R0
 	        MOV #MSG_T_RR,R1
 	        MOV #65500,R2
 	        JSR R7,_S_ESCREVER_NO_VISOR
@@ -108,8 +105,7 @@ T_R_RESUMIDO:
 ;;;;;;;;;;; Tela: menu de ações
 T_MENU:
 
-	        JSR R7,_S_LIMPA_VISOR_ULTRA                  ; Limpa mensagem da biblioteca
-	        MOV #35,R0
+	        MOV #36,R0
 	        MOV #MSG_MENU,R1
 	        MOV #65500,R2
 	        JSR R7,_S_ESCREVER_NO_VISOR
@@ -136,7 +132,6 @@ T_MENU_WAIT_GO_T_R_RESUMIDO:
 ;;;;;;;;;;; Tela: Relatório "Geral"
 T_GERAL:
 
-	        JSR R7,_S_LIMPA_VISOR_ULTRA                  ; Limpa mensagem da biblioteca
 	        MOV #36,R0
 	        MOV #MSG_GERAL1,R1
 	        MOV #65500,R2
@@ -157,8 +152,7 @@ T_GERAL:
 ;;;;;;;;;;; Tela: Seleção do engenheiro
 T_SEL_ENG:
 
-	        JSR R7,_S_LIMPA_VISOR_ULTRA                  ; Limpa mensagem da biblioteca
-	        MOV #11,R0
+	        MOV #36,R0
 	        MOV #MSG_SENG,R1
 	        MOV #65500,R2
 	        JSR R7,_S_ESCREVER_NO_VISOR
@@ -171,8 +165,7 @@ T_SEL_ENG:
 ;;;;;;;;;;; Tela: Mensagem de erro
 T_SEL_ERRO:
 
-	        JSR R7,_S_LIMPA_VISOR_ULTRA                  ; Limpa mensagem da biblioteca
-	        MOV #19,R0
+	        MOV #36,R0
 	        MOV #MSG_SERRO,R1
 	        MOV #65500,R2
 	        JSR R7,_S_ESCREVER_NO_VISOR
@@ -184,8 +177,7 @@ T_SEL_ERRO:
 
 T_REL_ERRO:
 
-	        JSR R7,_S_LIMPA_VISOR_ULTRA                  ; Limpa mensagem da biblioteca
-	        MOV #32,R0
+	        MOV #36,R0
 	        MOV #MSG_RENG,R1
 	        MOV #65500,R2
 	        JSR R7,_S_ESCREVER_NO_VISOR
@@ -197,14 +189,12 @@ T_REL_ERRO:
 T_ENCERRAMENTO:
 
 	        MOV #STACK,R6                                ; Aponta SP para STACK
-	        JSR R7,_S_LIMPA_VISOR_ULTRA                  ; Limpa mensagem da biblioteca
-	        MOV #18,R0
+	        MOV #36,R0
 	        MOV #MSG_BYE,R1
 	        MOV #65500,R2
 	        JSR R7,_S_ESCREVER_NO_VISOR
 
             HLT                                          ; Bye!
-
 
 ;> Subrotinas
 ;>-----------------------------------------------------------------------------
