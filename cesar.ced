@@ -157,9 +157,23 @@ T_SEL_ENG:
 	        MOV #65500,R2
 	        JSR R7,_S_ESCREVER_NO_VISOR
 
+T_SEL_ENG_WAIT_AGAIN:
+            JSR R7,KBD_WAIT           ; aguarda digitarem algo
+            MOV DATA, R5; debug
+            CMP #13, DATA             ; Digiraram enter?
+            BEQ T_SEL_ENG_GO          ;
+            CMP #8, DATA              ; Digiraram backspace?
+            BEQ T_SEL_ENG_WAIT_AGAIN
+            CMP #48, DATA             ; Menor que zero?
+            BLT T_SEL_ENG_WAIT_AGAIN
+            CMP #57, DATA             ; Maior que 9?
+            BGT T_SEL_ENG_WAIT_AGAIN
+
 ; @todo, resolver navegacao para pontos a partir daqui
 
-	        JSR R7,KBD_WAIT_ENTER
+	        ;JSR R7,KBD_WAIT_ENTER
+T_SEL_ENG_GO:
+
 	        JMP T_SEL_ERRO
 
 ;;;;;;;;;;; Tela: Mensagem de erro
@@ -171,7 +185,8 @@ T_SEL_ERRO:
 	        JSR R7,_S_ESCREVER_NO_VISOR
 
 	        JSR R7,KBD_WAIT_ENTER
-	        JMP T_REL_ERRO
+	        ;JMP T_REL_ERRO
+	        JMP T_SEL_ENG
 
 ;;;;;;;;;;; Tela: Relatorio do engenheiro
 
