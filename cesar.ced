@@ -36,6 +36,7 @@ MSG_SERRO:  DAB 'Engenheiro invalido                 '
 MSG_RENG:   DAB 'Engenheiro 99, lucro R$ 99999,00    '
 DATA_STR:   DAB '       '                                ; String temporaria.
 DATA_CONT:  DB  0                                        ; qtd teclas digit
+DATA_LAST:  DB  0                                        ; tecla valida anterior
 
 	        ORG 65498
 STACK:                                                   ; 65498
@@ -159,7 +160,7 @@ T_SEL_ENG:
 	        JSR R7,_S_ESCREVER_NO_VISOR
 
             MOV #0, DATA_CONT
-            ;MOV DATA_CONT, R5; debug
+            MOV DATA_CONT, R5; debug
 
 T_SEL_ENG_WAIT_AGAIN:
             JSR R7,KBD_WAIT           ; aguarda digitarem algo
@@ -167,7 +168,7 @@ T_SEL_ENG_WAIT_AGAIN:
             CMP #13, DATA             ; Digiraram enter?
             BEQ T_SEL_ENG_TEST        ;
             CMP #8, DATA              ; Digiraram backspace?
-            BEQ T_SEL_ENG_WAIT_AGAIN
+            BEQ T_SEL_ENG_BACKSPACE
             CMP DATA, #48              ; Menor que 0?
             BLT T_SEL_ENG_WAIT_AGAIN
             CMP DATA, #57              ; Maior que 9?
@@ -175,13 +176,22 @@ T_SEL_ENG_WAIT_AGAIN:
 
             ; numero entre 0 e 9, inclusive, digitados
             INC DATA_CONT
-            ;MOV DATA_CONT, R5; debug
+            MOV DATA_CONT, R5; debug
 
+            JMP T_SEL_ENG_WAIT_AGAIN
+
+T_SEL_ENG_BACKSPACE:
+
+            CMP #0, DATA_CONT
+            BEQ T_SEL_ENG_WAIT_AGAIN  ; Nada para apagar
+
+            SUB #1, DATA_CONT
+            MOV DATA_CONT, R5; debug
             JMP T_SEL_ENG_WAIT_AGAIN
 
 T_SEL_ENG_TEST:
 
-            ;MOV DATA_CONT, R5; debug
+            MOV DATA_CONT, R5; debug
             CMP #0, DATA_CONT
             BEQ T_SEL_ENG_GO_T_MENU   ; zero argumentos digitados, volta menu
             CMP DATA_CONT, #2
