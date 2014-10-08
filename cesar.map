@@ -34,7 +34,10 @@ KBD_WAIT_SUB            363                 16B
 KBD_WAIT_ENTER            374                 176
 VISOR_WRITE_NUMBER            393                 189
 LTRIM                 402                 192
-LTRIM_NOTRIM            452                 1C4
+LTRIM_4_DIGITOS            412                 19C
+LTRIM_3_DIGITOS            422                 1A6
+LTRIM_2_DIGITOS            432                 1B0
+LTRIM_NOTRIM            442                 1BA
 NE                  32768                8000
 LE                  32770                8002
 NC                  32772                8004

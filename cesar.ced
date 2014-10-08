@@ -260,19 +260,26 @@ VISOR_WRITE_NUMBER:
 
 ;> JSR R7,LTRIM
 LTRIM:
-          MOV R1,R5                ; Ponteiro para campo atual
+          ;MOV R1,R5                ; Ponteiro para campo atual
           CMP R0,#10000
           BGE LTRIM_NOTRIM
-          MOV #' ', 1(R1)          ; trim primeiro
+          CLR 0(R1)                ; trim primeiro
+
+LTRIM_4_DIGITOS:
           CMP R0,#1000
           BGE LTRIM_NOTRIM
-          MOV #' ', 2(R1)          ; trim segundo
+          CLR 1(R1)                 ; trim segundo
+
+LTRIM_3_DIGITOS:
           CMP R0,#100
           BGE LTRIM_NOTRIM
-          MOV #' ', 3(R1)          ; trim terceiro
+          CLR 2(R1)                 ; trim terceiro
+
+LTRIM_2_DIGITOS:
           CMP R0,#10
           BGE LTRIM_NOTRIM
-          MOV #' ', 4(R1)          ; trim quarto
+          CLR 3(R1)                 ; trim quarto
+
 LTRIM_NOTRIM:
           RTS R7
 
