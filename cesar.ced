@@ -1,16 +1,14 @@
+;> Autor: Emerson Rocha Luiz <emerson at alligo.com.br>
+;> Programa em assembly, compatível com processador hipotético Cesar/UFRGS
+;> versão 0.6, 2014-10-07
+
 ;> Inicializacao do apontador da pilha
 ;> para que a pilha fique acima da area
 ;> de memoria mapeada para entrada e saida
 ;> ESTAS DUAS INSTRUCOES DEVEM SER MANTIDAS AQUI !
           ORG 0                 ; primeira instrucao de qualquer
           MOV #65498,R6         ; programa: aponta SP para 65498
-;>-------------------------------------------------<
-;>>                                               <<
-;>>>                                             <<<
-;>>>> INSERIR AQUI O CODIGO DE SEU PROGRAMA !!! <<<<
-;>>>                                             <<<
-;>>                                               <<
-;>-------------------------------------------------<
+
 
 ;> Dados
 ;>-----------------------------------------------------------------------------
@@ -38,91 +36,91 @@ DATA_STR:   DAB '       '                                ; String temporaria.
 DATA_CONT:  DB  0                                        ; qtd teclas digit
 DATA_LAST:  DB  0                                        ; tecla valida anterior
 
-	        ORG 65498
+            ORG 65498
 STACK:                                                   ; 65498
-STATUS:		DB  0                                        ; 65498
-DATA:		DB  0                                        ; 65499
-VISOR:		DAB [36]
+STATUS:     DB  0                                        ; 65498
+DATA:       DB  0                                        ; 65499
+VISOR:      DAB [36]
 
 ;> Programa principal
 ;>-----------------------------------------------------------------------------
-	        ORG 0
-	        MOV #STACK,R6                                ; Aponta SP para STACK
+            ORG 0
+            MOV #STACK,R6                                ; Aponta SP para STACK
 
 ;;;;;;;;;;; Tela: Identificação do autor
 
-	        MOV #36,R0
-	        MOV #id_autor,R1
-	        MOV #65500,R2
-	        JSR R7,_S_ESCREVER_NO_VISOR
-	        JSR R7,KBD_WAIT_ENTER
+            MOV #36,R0
+            MOV #id_autor,R1
+            MOV #65500,R2
+            JSR R7,_S_ESCREVER_NO_VISOR
+            JSR R7,KBD_WAIT_ENTER
 
-	        JMP T_R_RESUMIDO
+            JMP T_R_RESUMIDO
 
 ;;;;;;;;;;; Tela: Relatorio resumido
 T_R_RESUMIDO:
 
-	        MOV #36,R0
-	        MOV #MSG_T_RR,R1
-	        MOV #65500,R2
-	        JSR R7,_S_ESCREVER_NO_VISOR
+            MOV #36,R0
+            MOV #MSG_T_RR,R1
+            MOV #65500,R2
+            JSR R7,_S_ESCREVER_NO_VISOR
 
             ; nº engenheiros
             MOV #STACK,R6
             MOV DATA_N_ENG,-(R6)
-            MOV #DATA_STR,-(R6)                           ; DATA_STR contém string
+            MOV #DATA_STR,-(R6)
             JSR R7,uint2str
 
             MOV #2,R0
             MOV #DATA_STR,R1
             ADD #3,R1
-            MOV #65513,R2                                 ; 65513 = posição no visor
+            MOV #65513,R2                                 ; 65513 = pos visor
             JSR R7,_S_ESCREVER_NO_VISOR
 
             ; trim dos zeros
             MOV DATA_N_ENG,R0
-            MOV #65510,R1                                 ; 65513-3 = 65510, inicio imaginario para trim
-            JSR R7,LTRIM_2_DIGITOS
+            MOV #65510,R1                                 ; 65513-3=65510
+            JSR R7,LTRIM_2_DIGITOS                        ; inicio para trim
 
             ; nº cidades
             MOV #STACK,R6
             MOV DATA_N_LUC,-(R6)
             MOV #DATA_STR,-(R6)
-            JSR R7,uint2str                               ; converte numero para string
+            JSR R7,uint2str                               ; conv. int p/ str
 
-            MOV #3,R0                                    ; escreve no visor
+            MOV #3,R0                                     ; escreve no visor
             MOV #DATA_STR,R1
             ADD #2,R1
-            MOV #65527,R2                                 ; 65527, posicao no visor
+            MOV #65527,R2                                 ; 65527, pos. visor
             JSR R7,_S_ESCREVER_NO_VISOR
 
             ; trim dos zeros
             MOV DATA_N_LUC,R0
-            MOV #65525,R1                                 ; 65527-2 = 65525, inicio imaginario para trim
-            JSR R7,LTRIM_3_DIGITOS
+            MOV #65525,R1                                 ; 65527-2 = 65525
+            JSR R7,LTRIM_3_DIGITOS                        ; inicio para trim
 
-	        JSR R7,KBD_WAIT_ENTER
-	        JMP T_MENU
+            JSR R7,KBD_WAIT_ENTER
+            JMP T_MENU
 
 ;;;;;;;;;;; Tela: menu de ações
 T_MENU:
 
-	        MOV #36,R0
-	        MOV #MSG_MENU,R1
-	        MOV #65500,R2
-	        JSR R7,_S_ESCREVER_NO_VISOR
+            MOV #36,R0
+            MOV #MSG_MENU,R1
+            MOV #65500,R2
+            JSR R7,_S_ESCREVER_NO_VISOR
 
 T_MENU_WAIT:
-            JSR R7,KBD_WAIT                               ;  Aguarda qualquer tecla
+            JSR R7,KBD_WAIT                               ; Aguarda qq tecla
             CMP R0,#'g'                                   ; tecla = enter?
             BEQ T_GERAL                                   ; Vai Tela T_GERAL
             CMP R0,#'r'                                   ; tecla = r?
-            BEQ T_MENU_WAIT_GO_T_R_RESUMIDO               ; Vai Tela T_R_RESUMIDO
+            BEQ T_MENU_WAIT_GO_T_R_RESUMIDO               ; Vai T. T_R_RESUMIDO
             CMP R0,#'e'                                   ; tecla = e?
             BEQ T_SEL_ENG                                 ; Vai Tela T_SEL_ENG
             CMP R0,#'f'                                   ; tecla = f?
-            BEQ T_MENU_WAIT_GO_T_ENCERRAMENTO             ; Vai tela T_ENCERRAMENTO
-            BR  T_MENU_WAIT                               ; N.D.A, volta a esperar
+            BEQ T_MENU_WAIT_GO_T_ENCERRAMENTO             ; V.T. T_ENCERRAMENTO
+            BR  T_MENU_WAIT                               ; N.D.A, volta
 
 ; Pulos mais distante, para evitar desvio condicional superior a 8 bits
 T_MENU_WAIT_GO_T_ENCERRAMENTO:
@@ -134,44 +132,44 @@ T_MENU_WAIT_GO_T_R_RESUMIDO:
 ;;;;;;;;;;; Tela: Relatório "Geral"
 T_GERAL:
 
-	        MOV #36,R0
-	        MOV #MSG_GERAL1,R1
-	        MOV #65500,R2
-	        JSR R7,_S_ESCREVER_NO_VISOR
+            MOV #36,R0
+            MOV #MSG_GERAL1,R1
+            MOV #65500,R2
+            JSR R7,_S_ESCREVER_NO_VISOR
 
-	        JSR R7,KBD_WAIT_ENTER
+            JSR R7,KBD_WAIT_ENTER
 
-	        JSR R7,_S_LIMPA_VISOR_ULTRA                  ; Limpa mensagem da biblioteca
-	        MOV #36,R0
-	        MOV #MSG_GERAL2,R1
-	        MOV #65500,R2
-	        JSR R7,_S_ESCREVER_NO_VISOR
+            JSR R7,_S_LIMPA_VISOR_ULTRA                   ; Limpa tela
+            MOV #36,R0
+            MOV #MSG_GERAL2,R1
+            MOV #65500,R2
+            JSR R7,_S_ESCREVER_NO_VISOR
 
-	        JSR R7,KBD_WAIT_ENTER
+            JSR R7,KBD_WAIT_ENTER
 
-	        JMP T_MENU
+            JMP T_MENU
 
 ;;;;;;;;;;; Tela: Seleção do engenheiro
 T_SEL_ENG:
 
-	        MOV #36,R0
-	        MOV #MSG_SENG,R1
-	        MOV #65500,R2
-	        JSR R7,_S_ESCREVER_NO_VISOR
+            MOV #36,R0
+            MOV #MSG_SENG,R1
+            MOV #65500,R2
+            JSR R7,_S_ESCREVER_NO_VISOR
 
             MOV #0, DATA_CONT
             MOV DATA_CONT, R5; debug
 
 T_SEL_ENG_WAIT_AGAIN:
-            JSR R7,KBD_WAIT           ; aguarda digitarem algo
+            JSR R7,KBD_WAIT                               ; Aguarda teclado
 
-            CMP #13, DATA             ; Digiraram enter?
-            BEQ T_SEL_ENG_TEST        ;
-            CMP #8, DATA              ; Digiraram backspace?
+            CMP #13, DATA                                 ; Digiraram enter?
+            BEQ T_SEL_ENG_TEST
+            CMP #8, DATA                                  ; Dig. backspace?
             BEQ T_SEL_ENG_BACKSPACE
-            CMP DATA, #48              ; Menor que 0?
+            CMP DATA, #48                                 ; Menor que 0?
             BLT T_SEL_ENG_WAIT_AGAIN
-            CMP DATA, #57              ; Maior que 9?
+            CMP DATA, #57                                 ; Maior que 9?
             BGT T_SEL_ENG_WAIT_AGAIN
 
             ; numero entre 0 e 9, inclusive, digitados
@@ -183,7 +181,7 @@ T_SEL_ENG_WAIT_AGAIN:
 T_SEL_ENG_BACKSPACE:
 
             CMP #0, DATA_CONT
-            BEQ T_SEL_ENG_WAIT_AGAIN  ; Nada para apagar
+            BEQ T_SEL_ENG_WAIT_AGAIN                      ; Nada para apagar
 
             SUB #1, DATA_CONT
             MOV DATA_CONT, R5; debug
@@ -193,17 +191,17 @@ T_SEL_ENG_TEST:
 
             MOV DATA_CONT, R5; debug
             CMP #0, DATA_CONT
-            BEQ T_SEL_ENG_GO_T_MENU   ; zero argumentos digitados, volta menu
+            BEQ T_SEL_ENG_GO_T_MENU                       ; 0 args, volta menu
             CMP DATA_CONT, #2
 
             ; @todo checar se o numero realmente esta entre os engenheiros
-            BLE T_REL_ENG             ; tem dois ou menos digitos, vai relatorio
+            BLE T_REL_ENG                                 ; 2 <= args,relatório
 
-            JMP T_SEL_ERRO            ; se chegou aqui, tem erro
+            JMP T_SEL_ERRO                                ; Erro
 
 T_SEL_ENG_GO:
 
-	        JMP T_REL_ENG
+            JMP T_REL_ENG
 
 ; Jump distante
 T_SEL_ENG_GO_T_MENU:
@@ -212,35 +210,34 @@ T_SEL_ENG_GO_T_MENU:
 ;;;;;;;;;;; Tela: Mensagem de erro
 T_SEL_ERRO:
 
-	        MOV #36,R0
-	        MOV #MSG_SERRO,R1
-	        MOV #65500,R2
-	        JSR R7,_S_ESCREVER_NO_VISOR
+            MOV #36,R0
+            MOV #MSG_SERRO,R1
+            MOV #65500,R2
+            JSR R7,_S_ESCREVER_NO_VISOR
 
-	        JSR R7,KBD_WAIT_ENTER
-	        ;JMP T_REL_ERRO
-	        JMP T_SEL_ENG
+            JSR R7,KBD_WAIT_ENTER
+            JMP T_SEL_ENG
 
-;;;;;;;;;;; Tela: Relatorio do engenheiro
+;;;;;;;;;;; Tela: Relatório do engenheiro
 
 T_REL_ENG:
 
-	        MOV #36,R0
-	        MOV #MSG_RENG,R1
-	        MOV #65500,R2
-	        JSR R7,_S_ESCREVER_NO_VISOR
+            MOV #36,R0
+            MOV #MSG_RENG,R1
+            MOV #65500,R2
+            JSR R7,_S_ESCREVER_NO_VISOR
 
-	        JSR R7,KBD_WAIT_ENTER
-	        JMP T_SEL_ENG
+            JSR R7,KBD_WAIT_ENTER
+            JMP T_SEL_ENG
 
 ;;;;;;;;;;; Tela: Mensagem de encerramento
 T_ENCERRAMENTO:
 
-	        MOV #STACK,R6                                ; Aponta SP para STACK
-	        MOV #36,R0
-	        MOV #MSG_BYE,R1
-	        MOV #65500,R2
-	        JSR R7,_S_ESCREVER_NO_VISOR
+            MOV #STACK,R6                                ; Aponta SP para STACK
+            MOV #36,R0
+            MOV #MSG_BYE,R1
+            MOV #65500,R2
+            JSR R7,_S_ESCREVER_NO_VISOR
 
             HLT                                          ; Bye!
 
@@ -265,7 +262,7 @@ KBD_WAIT_ENTER:
           CLR STATUS            ; Limpa estado anterior do teclado
           TST STATUS            ; Já digitaram alguma tecla?
           BEQ #-6               ; Ve se já foi digitado
-          CMP #13, DATA         ; Digitaram algo; Compara tela digitada com enter
+          CMP #13, DATA         ; Digitaram algo;Compara com enter
           BNE KBD_WAIT_ENTER    ; Caso não seja enter, segue esperando
           RTS R7                ; Retorna ao ponto em que foi chamada
 
@@ -275,40 +272,39 @@ KBD_WAIT_ENTER:
 ;> MOV #endvisor,R2             ; endereco do LED onde deve iniciar a mensagem
 ;> JSR R7,KBD_WAIT
 VISOR_WRITE_NUMBER:
-          MOV #5,R0              ; tamanho da mensagem (em caracteres)
+          MOV #5,R0             ; tamanho da mensagem (em caracteres)
           ; R1 e R2 ja foram preenchidos na chamada desta funcao
-          ;MOV #endmensagem,R1   ; endereco da mensagem a ser escrita no visor
-          ;MOV #endvisor,R2             ; endereco do LED onde deve iniciar a mensagem
+
           JSR R7,_S_ESCREVER_NO_VISOR
           RTS R7
 
 ;> ltrim: Rotina para substituir zeros iniciais de um numero (até 5 digitos)
 ;> Nota: *faz trim a cada dois bytes quando não usada no visor*
 ;>
-;> MOV #valorinteiro,R0           ; valor inteiro que a string representa
-;> MOV #endmensagem,R1            ; endereco da mensagem a ser escrita no visor
+;> MOV #valorinteiro,R0          ; valor inteiro que a string representa
+;> MOV #endmensagem,R1           ; endereco da mensagem a ser escrita no visor
 
 ;> JSR R7,LTRIM
 LTRIM:
-          ;MOV R1,R5                ; Ponteiro para campo atual
+          ;MOV R1,R5             ; Ponteiro para campo atual
           CMP R0,#10000
           BGE LTRIM_NOTRIM
-          CLR 0(R1)                ; trim primeiro
+          CLR 0(R1)              ; trim primeiro
 
 LTRIM_4_DIGITOS:
           CMP R0,#1000
           BGE LTRIM_NOTRIM
-          CLR 1(R1)                 ; trim segundo
+          CLR 1(R1)              ; trim segundo
 
 LTRIM_3_DIGITOS:
           CMP R0,#100
           BGE LTRIM_NOTRIM
-          CLR 2(R1)                 ; trim terceiro
+          CLR 2(R1)              ; trim terceiro
 
 LTRIM_2_DIGITOS:
           CMP R0,#10
           BGE LTRIM_NOTRIM
-          CLR 3(R1)                 ; trim quarto
+          CLR 3(R1)              ; trim quarto
 
 LTRIM_NOTRIM:
           RTS R7
@@ -358,7 +354,10 @@ LTRIM_NOTRIM:
 ;	Estruturas de dados, fim
 ;------------------------------------------------------------------------------
 
-;> Subrotinas auxiliares
+;> Demais subrotinas
+;> © Instituto de informática, UFRGS
+;> Licensa de uso à parte, consultar autores
+;> * BibCesar.ced V. 11 -- 09/09/2014 *
 ;>-----------------------------------------------------------------------------
 
 ;**********************************************************
