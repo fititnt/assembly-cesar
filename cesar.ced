@@ -35,8 +35,6 @@ MSG_SENG:   DAB 'Engenheiro:'                           ; 11 chars
 MSG_SERRO:  DAB 'Engenheiro invalido'                   ; 19 chars
 MSG_RENG:   DAB 'Engenheiro 99, lucro R$ 99999,00'     ; 32 chars
 KEY_ENTER:  DB  13                                      ; Tecla Enter, ASCII = 13
-
-            ORG 10000
 DATA_STR:   DAB '       '                               ; String temporaria. 7 caract, 2 usados
 
 	        ORG 65498
@@ -76,39 +74,33 @@ T_R_RESUMIDO:
             MOV #DATA_STR,-(R6)                           ; DATA_STR contém string
             JSR R7,uint2str
 
-            ; trim
-            ;MOV DATA_N_ENG,R0
-            ;MOV #DATA_STR,R1
-            ;JSR R7,LTRIM
-
             MOV #2,R0
             MOV #DATA_STR,R1
             ADD #3,R1
-            MOV #65513,R2
+            MOV #65513,R2                                 ; 65513 = posição no visor
             JSR R7,_S_ESCREVER_NO_VISOR
+
+            ; trim dos zeros
+            MOV DATA_N_ENG,R0
+            MOV #65510,R1                                 ; 65513-3 = 65510, inicio imaginario para trim
+            JSR R7,LTRIM_2_DIGITOS
 
             ; nº cidades
             MOV #STACK,R6
             MOV DATA_N_LUC,-(R6)
             MOV #DATA_STR,-(R6)
-            JSR R7,uint2str
+            JSR R7,uint2str                               ; converte numero para string
 
-            ; trim
-            ;MOV #777,R5; debug
-            ;MOV DATA_N_LUC,R0
-            ;MOV #DATA_STR,R1
-            ;JSR R7,LTRIM
-
-            MOV #5,R0;3
+            MOV #3,R0                                    ; escreve no visor
             MOV #DATA_STR,R1
-            ;ADD #2,R1
-            MOV #65527,R2
+            ADD #2,R1
+            MOV #65527,R2                                 ; 65527, posicao no visor
             JSR R7,_S_ESCREVER_NO_VISOR
 
+            ; trim dos zeros
             MOV DATA_N_LUC,R0
-            MOV #65527,R1
-            JSR R7,LTRIM
-;
+            MOV #65525,R1                                 ; 65527-2 = 65525, inicio imaginario para trim
+            JSR R7,LTRIM_3_DIGITOS
 
 	        JSR R7,KBD_WAIT_ENTER
 	        JMP T_MENU
@@ -253,7 +245,7 @@ VISOR_WRITE_NUMBER:
           RTS R7
 
 ;> ltrim: Rotina para substituir zeros iniciais de um numero (até 5 digitos)
-;> *faz trim a cada dois bytes quando não usada no visor*
+;> Nota: *faz trim a cada dois bytes quando não usada no visor*
 ;>
 ;> MOV #valorinteiro,R0           ; valor inteiro que a string representa
 ;> MOV #endmensagem,R1            ; endereco da mensagem a ser escrita no visor
