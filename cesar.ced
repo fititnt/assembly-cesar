@@ -15,17 +15,17 @@
 ;> Dados
 ;>-----------------------------------------------------------------------------
             ORG H8000
-DATA_N_ENG: DW  0                                       ; Numero engenheiros
-DATA_P_ENG: DW  0                                       ; Ponteiro, ListaDeEng
-DATA_N_LUC: DW  0                                       ; Numero lucros
-DATA_P_LUC: DW  0                                       ; Ponteiro, ListadeLuc
+DATA_N_ENG: DW  0                                        ; Numero engenheiros
+DATA_P_ENG: DW  0                                        ; Ponteiro, ListaDeEng
+DATA_N_LUC: DW  0                                        ; Numero lucros
+DATA_P_LUC: DW  0                                        ; Ponteiro, ListadeLuc
 
 ;> Constantes e variáveis
 ;>-----------------------------------------------------------------------------
 
             ORG 8096
 
-id_autor:   DAB 'Emerson Rocha Luiz - 143503         '  ; 36 caracteres
+id_autor:   DAB 'Emerson Rocha Luiz - 143503         '   ; 36 caracteres
 MSG_BYE:    DAB 'Programa encerrado                  '
 MSG_T_RR:   DAB 'Engenheiros:      Cidades:          '
 MSG_MENU:   DAB 'Selecione uma acao: [r] [e] [g] [f] '
@@ -34,7 +34,8 @@ MSG_GERAL2: DAB 'Menor lucro: R$     9,00 do eng:  9 '
 MSG_SENG:   DAB 'Engenheiro:                         '
 MSG_SERRO:  DAB 'Engenheiro invalido                 '
 MSG_RENG:   DAB 'Engenheiro 99, lucro R$ 99999,00    '
-DATA_STR:   DAB '       '                               ; String temporaria. 7 caract, 2 usados
+DATA_STR:   DAB '       '                                ; String temporaria.
+DATA_CONT:  DB  0                                        ; qtd teclas digit
 
 	        ORG 65498
 STACK:                                                   ; 65498
@@ -157,24 +158,46 @@ T_SEL_ENG:
 	        MOV #65500,R2
 	        JSR R7,_S_ESCREVER_NO_VISOR
 
+            MOV #0, DATA_CONT
+            ;MOV DATA_CONT, R5; debug
+
 T_SEL_ENG_WAIT_AGAIN:
             JSR R7,KBD_WAIT           ; aguarda digitarem algo
-            MOV DATA, R5; debug
+
             CMP #13, DATA             ; Digiraram enter?
-            BEQ T_SEL_ENG_GO          ;
+            BEQ T_SEL_ENG_TEST        ;
             CMP #8, DATA              ; Digiraram backspace?
             BEQ T_SEL_ENG_WAIT_AGAIN
-            CMP #48, DATA             ; Menor que zero?
+            CMP DATA, #48              ; Menor que 0?
             BLT T_SEL_ENG_WAIT_AGAIN
-            CMP #57, DATA             ; Maior que 9?
+            CMP DATA, #57              ; Maior que 9?
             BGT T_SEL_ENG_WAIT_AGAIN
 
-; @todo, resolver navegacao para pontos a partir daqui
+            ; numero entre 0 e 9, inclusive, digitados
+            INC DATA_CONT
+            ;MOV DATA_CONT, R5; debug
 
-	        ;JSR R7,KBD_WAIT_ENTER
+            JMP T_SEL_ENG_WAIT_AGAIN
+
+T_SEL_ENG_TEST:
+
+            ;MOV DATA_CONT, R5; debug
+            CMP #0, DATA_CONT
+            BEQ T_SEL_ENG_GO_T_MENU   ; zero argumentos digitados, volta menu
+            CMP DATA_CONT, #2
+
+            ; @todo checar se o numero realmente esta entre os engenheiros
+            BLE T_REL_ENG             ; tem dois ou menos digitos, vai relatorio
+
+            JMP T_SEL_ERRO            ; se chegou aqui, tem erro
+
 T_SEL_ENG_GO:
 
-	        JMP T_SEL_ERRO
+	        JMP T_REL_ENG
+
+; Jump distante
+T_SEL_ENG_GO_T_MENU:
+            JMP T_MENU
 
 ;;;;;;;;;;; Tela: Mensagem de erro
 T_SEL_ERRO:
@@ -190,7 +213,7 @@ T_SEL_ERRO:
 
 ;;;;;;;;;;; Tela: Relatorio do engenheiro
 
-T_REL_ERRO:
+T_REL_ENG:
 
 	        MOV #36,R0
 	        MOV #MSG_RENG,R1
@@ -198,7 +221,7 @@ T_REL_ERRO:
 	        JSR R7,_S_ESCREVER_NO_VISOR
 
 	        JSR R7,KBD_WAIT_ENTER
-	        JMP T_ENCERRAMENTO
+	        JMP T_SEL_ENG
 
 ;;;;;;;;;;; Tela: Mensagem de encerramento
 T_ENCERRAMENTO:
